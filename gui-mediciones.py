@@ -1,3 +1,4 @@
+#from tkinter import *
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -5,10 +6,49 @@ from tkinter import messagebox
 from openpyxl import Workbook
 from datetime import datetime
 
+import pyfirmata
+import time
+
+def leer_valores_analogicos(analog_pin_0, analog_pin_1):
+
+    contador_nones = 0
+
+    while True:
+        # Leer los valores analógicos
+        valor_analogico_0 = analog_pin_0.read()
+        valor_analogico_1 = analog_pin_1.read()
+
+        if (valor_analogico_0 == None) or (valor_analogico_1 == None):
+            contador_nones += 1
+            print(contador_nones)
+            time.sleep(1)
+            continue
+        else:
+
+            return valor_analogico_0*5*100, valor_analogico_1*5*100
+
+board = pyfirmata.Arduino('COM3')  # Reemplaza 'COM3' con el puerto del Arduino
+
+# Inicializar el protocolo Firmata
+it = pyfirmata.util.Iterator(board)
+it.start()
+
+# Configurar pines analógicos A0 y A1
+analog_pin_0 = board.get_pin('a:0:i')
+analog_pin_1 = board.get_pin('a:1:i')
+
+
+
 # Función para añadir valores a la lista
 def agregar_valores():
-    temperatura1 = entrada_temp1.get()
-    temperatura2 = entrada_temp2.get()
+    time.sleep(1)
+    valor_a0, valor_a1 = leer_valores_analogicos(analog_pin_0, analog_pin_1)
+    temperatura1 = valor_a0
+    entrada_temp1.config(text= str(temperatura1))
+    #entrada_temp1.get()
+    temperatura2 = valor_a1
+    entrada_temp2.config(text= str(temperatura2))
+    #entrada_temp2.get()
     hora_actual = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     valores_listbox.insert(tk.END, f'{hora_actual}: Temp1={temperatura1}, Temp2={temperatura2}')
     valores.append((hora_actual, temperatura1, temperatura2))
@@ -43,11 +83,12 @@ frame.grid(column=0, row=0, padx=10, pady=10, sticky=(tk.W, tk.E, tk.N, tk.S))
 
 # Etiquetas y entradas para las temperaturas
 ttk.Label(frame, text="Temperatura 1:").grid(column=0, row=0, padx=5, pady=5)
-entrada_temp1 = ttk.Entry(frame)
+#entrada_temp1 = ttk.Entry(frame)
+entrada_temp1 = ttk.Label(frame, text='0')
 entrada_temp1.grid(column=1, row=0, padx=5, pady=5)
 
 ttk.Label(frame, text="Temperatura 2:").grid(column=0, row=1, padx=5, pady=5)
-entrada_temp2 = ttk.Entry(frame)
+entrada_temp2 = ttk.Label(frame, text='0') #ttk.Entry(frame)
 entrada_temp2.grid(column=1, row=1, padx=5, pady=5)
 
 # Botones para añadir y guardar valores
