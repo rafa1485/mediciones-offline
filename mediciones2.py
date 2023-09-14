@@ -11,15 +11,20 @@ def conexion():
     board.analog[1].enable_reporting()
 
     # Leer los valores analógicos
+    contador_nones = 0
     while True:
+        time.sleep(1)
+
         valor_analogico_0 = board.analog[0].read()
         valor_analogico_1 = board.analog[1].read()
         if (valor_analogico_0 == None) or (valor_analogico_1 == None):
+            contador_nones += 1
             continue
         else:
-            print(f'{valor_analogico_0*5*100}, {valor_analogico_1*5*100}')
-        
-        time.sleep(1)
+            print(contador_nones)
+            board.samplingOff()
+            board.exit()
+            return valor_analogico_0*5*100, valor_analogico_1*5*100
             
 
     
@@ -28,4 +33,5 @@ def conexion():
 
 # Ejemplo de uso
 if __name__ == "__main__":
-    conexion()
+    for i in range(40):
+        print(conexion())
