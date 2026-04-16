@@ -27,7 +27,7 @@ def leer_valores_analogicos(analog_pin_0, analog_pin_1):
 
 # Ejemplo de uso
 if __name__ == "__main__":
-    board = pyfirmata.Arduino('COM3')  # Reemplaza 'COM3' con el puerto del Arduino
+    board = pyfirmata.Arduino('COM7')  # Reemplaza 'COM3' con el puerto del Arduino
 
     # Inicializar el protocolo Firmata
     it = pyfirmata.util.Iterator(board)
